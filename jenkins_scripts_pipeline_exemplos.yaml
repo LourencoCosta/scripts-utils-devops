@@ -1,0 +1,127 @@
+#Exemplo 1
+pipeline {
+    agent {
+        node {
+            label 'master'
+        }
+    }
+    stages {
+        stage('Git pull from Bitbucket Analytical Repository') {
+            steps {
+                git changelog: false, credentialsId: 'jenkins_bitbucket', poll: false, url: 'git@bitbucket.org:sensedia/analytical.git'
+            }
+        }
+        stage('Change Branch') {
+            steps {
+                sh script: 'git checkout generate_ace_report_jekins && docker ps -a'
+            }
+        }
+         stage('Run Script') {
+            steps {
+                sh script: 'ls'
+            }
+        }
+    }
+}
+
+#Exemplo 2
+pipeline {
+    agent {
+        node {
+            label 'master'
+        }
+    }
+    stages {
+        
+         stage('Run Script') {
+            steps {
+                sh script: 'docker rmi 864b06dd5418'
+            }
+        }
+    }
+}
+
+#Exemplo 3
+pipeline {
+    agent {
+        docker {
+            image "ralou/python:2.0"
+        }
+    }
+    stages {
+        stage('Git pull from Bitbucket Analytical Repository') {
+            steps {
+                git changelog: false, credentialsId: 'jenkins_bitbucket', poll: false, url: 'git@bitbucket.org:sensedia/analytical.git'
+            }
+        }
+        stage('Change Branch') {
+            steps{
+                dir ('/var/lib/jenkins/workspace/generate_ace_report/scripts/python/impl/generate_ace_report'){
+                    sh 'git checkout generate_ace_report_jekins'
+                }
+                
+            }
+        }
+        stage('Run') {
+            steps {
+                dir ('/var/lib/jenkins/workspace/generate_ace_report/scripts/python/impl/generate_ace_report'){
+                     sh 'docker image ls'
+                }
+            }
+        }
+    }
+}
+
+#Exemplo 4
+pipeline {
+    agent {
+        docker {
+            image "ralou/python:2.0"
+        }
+    }
+    stages {
+        stage('Git pull from Bitbucket Analytical Repository') {
+            steps {
+                git changelog: false, credentialsId: 'jenkins_bitbucket', poll: false, url: 'git@bitbucket.org:sensedia/analytical.git'
+            }
+        }
+        stage('Change Branch') {
+            steps{
+                dir ('/var/lib/jenkins/workspace/generate_ace_report/scripts/python/impl/generate_ace_report'){
+                    sh 'git checkout generate_ace_report_jekins'
+                }
+                
+            }
+        }
+        stage('Run') {
+            steps {
+                dir ('/var/lib/jenkins/workspace/generate_ace_report/scripts/python/impl/generate_ace_report'){
+                     sh 'docker images'
+                }
+            }
+        }
+    }
+}
+
+#Final use for create docker 
+pipeline {
+    agent {
+        docker {
+            image "ralou/python:2.0"
+        }
+    }
+    stages {
+        stage('Git pull from Bitbucket Analytical Repository') {
+            steps {
+                git changelog: false, credentialsId: 'jenkins_bitbucket', poll: false, url: 'git@bitbucket.org:sensedia/analytical.git'
+            }
+        }
+        stage('Run') {
+            steps {
+                dir ('/var/lib/jenkins/workspace/generate_ace_report/scripts/python/impl/generate_ace_report'){
+                    sh 'python3 generate_ace_report.py $startDate $finalDate $CLIENTS'
+                }
+            }
+        }
+    }
+}
